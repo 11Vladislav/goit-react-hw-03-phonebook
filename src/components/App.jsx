@@ -12,58 +12,56 @@ const INITIAL_STATE = {
     { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
   ],
   filter: '',
-}; // Initial state of the application
+};
 
 export class App extends Component {
   state = { ...INITIAL_STATE };
 
-  handleFilterChange = filter => {
-    this.setState({ filter }); // Set the filter in the state
+   handleFilterChange = filter => {
+    this.setState({ filter });
   };
-
 
   handleAddContact = contact => {
     const { contacts } = this.state;
     if (contacts.filter(({ name }) => name === contact.name).length !== 0) {
-      alert(contact.name + ' is already in contacts!'); // If the contact is already in the contacts, alert the user
+      alert(contact.name + ' is already in contacts!');
       return;
     }
-
     this.setState(prevState => ({
       ...INITIAL_STATE,
-      contacts: [contact, ...prevState.contacts], // Add the contact to the contacts
+      contacts: [contact, ...prevState.contacts],
     }));
   };
-
-  componentDidMount = () => {
-    const persistedState = localStorage.getItem('contacts');
-    if (persistedState) {
-      this.setState({ contacts: JSON.parse(persistedState) });
-    }
-  }
-
-    componentDidUpdate = () => {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-
-
   handleDeleteContact = id => {
     this.setState(({ contacts }) => {
       const updatedContacts = contacts.filter(contact => contact.id !== id);
-      return { ...INITIAL_STATE, contacts: updatedContacts }; // Update the contacts
+      return { ...INITIAL_STATE, contacts: updatedContacts };
     });
   };
 
   filterContacts = () => {
-    const { contacts, filter } = this.state; // Get the contacts and the filter from the state
+    const { contacts, filter } = this.state;
     return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(filter.toLowerCase()), // Filter the contacts by the filter
+      contact.name.toLowerCase().includes(filter.toLowerCase()),
     );
   };
 
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    if (contacts) {
+      this.setState({ contacts: JSON.parse(contacts) });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
+
   render() {
-    const { filter } = this.state; // Get the filter from the state
-    const filteredContacts = this.filterContacts(); // Get the filtered contacts
+    const { filter } = this.state;
+    const filteredContacts = this.filterContacts();
 
     return (
       <>
@@ -81,5 +79,3 @@ export class App extends Component {
     );
   }
 }
-
-export default App
